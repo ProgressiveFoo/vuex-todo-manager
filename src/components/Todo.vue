@@ -1,21 +1,59 @@
 <template>
   <div>
+    <AddTodo />
+    <FilterTodos />
     <h3>Todos</h3>
+      <div class="legend">
+      <span>Double click to mark as complete</span>
+      <span>
+        <span class="incomplete-box"></span> = Incomplete
+      </span>
+      <span>
+        <span class="complete-box"></span> = Complete
+      </span>
+    </div>
     <div class="todos">
-      <div v-for="todo in allTodos" :key="todo.id" class="todo">{{todo.title}}</div>
+      <div
+        @dblclick="onDblClick(todo)"
+        v-for="todo in allTodos"
+        :key="todo.id"
+        class="todo"
+        v-bind:class="{'is-complete':todo.completed}"
+      >
+         {{ todo.title }}
+        <span @click="deleteTodo(todo.id)" class="delete">X</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import AddTodo from './AddTodo.vue'
+import FilterTodos from './FilterTodos.vue'
 export default {
+  components:{
+    AddTodo,
+    FilterTodos
+  },
   name: "Todos",
 
   methods: {
     ...mapActions([
-      'fetchTodos'
-    ])
+      'fetchTodos',
+      'deleteTodo',
+      'updateTodo'
+    ]),
+
+    onDblClick(todo){
+      const updTodo = {
+        id: todo.id,
+        title: todo.title,
+        completed: !todo.completed
+      }
+
+      this.updateTodo(updTodo)
+    }
   },
 
   computed:{
@@ -45,7 +83,7 @@ export default {
   position: relative;
   cursor: pointer;
 }
-i {
+.delete {
   position: absolute;
   bottom: 10px;
   right: 10px;
